@@ -19,8 +19,29 @@
 
 ## 🚀 실행 방법
 
+### 로컬 실행
 1. `index.html` 파일을 웹 브라우저로 열기
 2. 또는 웹 서버에 업로드하여 실행
+
+### GitHub에 업로드
+1. GitHub에서 새 저장소 생성
+2. 다음 명령어 실행:
+```bash
+git remote add origin https://github.com/사용자명/저장소명.git
+git branch -M main
+git push -u origin main
+```
+
+### Vercel로 배포
+1. [Vercel](https://vercel.com)에 로그인
+2. "New Project" 클릭
+3. GitHub 저장소 선택 또는 연결
+4. 자동으로 배포됨
+5. 또는 Vercel CLI 사용:
+```bash
+npm i -g vercel
+vercel
+```
 
 ## 🎯 게임 모드
 

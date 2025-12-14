@@ -240,10 +240,13 @@ class GameRenderer {
 
     setupCanvas() {
         const container = this.canvas.parentElement;
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
+        const containerWidth = container.clientWidth - 16; // padding 고려
+        const containerHeight = container.clientHeight - 16;
         
-        const size = Math.min(containerWidth - this.padding * 2, containerHeight - this.padding * 2);
+        // 모바일에서는 가로를 기준으로, 데스크톱에서는 더 작은 값 사용
+        const availableSize = Math.min(containerWidth, containerHeight, window.innerWidth - 32);
+        const size = Math.max(280, availableSize); // 최소 크기 보장
+        
         this.canvas.width = size;
         this.canvas.height = size;
         this.canvas.style.width = size + 'px';

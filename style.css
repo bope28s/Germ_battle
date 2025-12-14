@@ -8,9 +8,10 @@ body {
     font-family: 'Arial', 'Malgun Gothic', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #333;
-    overflow: hidden;
-    touch-action: none;
+    overflow-x: hidden;
+    overflow-y: auto;
     -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
 }
 
 #app {
@@ -22,12 +23,13 @@ body {
 .screen {
     display: none;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     position: absolute;
     top: 0;
     left: 0;
-    padding: 20px;
+    padding: 15px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .screen.active {
@@ -88,6 +90,11 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    min-height: 60px;
 }
 
 .menu-btn:active, .mode-btn:active {
@@ -137,8 +144,9 @@ body {
 
 /* 게임 화면 */
 #game-screen {
-    padding: 10px;
+    padding: 8px;
     justify-content: flex-start;
+    align-items: stretch;
 }
 
 .game-header {
@@ -154,6 +162,8 @@ body {
     border-radius: 15px;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .player-info-item {
@@ -184,12 +194,14 @@ body {
 }
 
 .game-board-container {
-    flex: 1;
+    flex: 1 1 auto;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 8px;
+    min-height: 0;
+    overflow: hidden;
 }
 
 #game-board {
@@ -304,6 +316,11 @@ body {
     cursor: pointer;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    min-height: 44px;
 }
 
 .back-btn:active {
@@ -311,26 +328,69 @@ body {
 }
 
 /* 모바일 최적화 */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+    .screen {
+        padding: 10px;
+    }
+    
     .game-title {
         font-size: 2rem;
+        margin-bottom: 5px;
     }
     
     .subtitle {
-        font-size: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .title-container {
+        margin-bottom: 30px;
     }
     
     .menu-btn, .mode-btn {
-        font-size: 1.1rem;
-        padding: 18px 25px;
+        font-size: 1rem;
+        padding: 15px 20px;
+        min-height: 50px;
+    }
+    
+    .menu-buttons {
+        max-width: 100%;
+        gap: 15px;
+    }
+    
+    .mode-buttons {
+        max-width: 100%;
+        margin-top: 20px;
+        gap: 20px;
     }
     
     .mode-icon {
         font-size: 2.5rem;
     }
     
+    .mode-title {
+        font-size: 1.2rem;
+    }
+    
+    .mode-desc {
+        font-size: 0.9rem;
+    }
+    
+    #mode-screen {
+        padding-top: 20px;
+    }
+    
+    .game-header {
+        margin-bottom: 10px;
+    }
+    
     .player-info {
-        padding: 10px;
+        padding: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .player-info-item {
+        min-width: 80px;
     }
     
     .player-avatar {
@@ -338,12 +398,114 @@ body {
     }
     
     #current-turn {
-        font-size: 1rem;
-        padding: 3px 10px;
+        font-size: 0.85rem;
+        padding: 5px 10px;
+        order: -1;
+        width: 100%;
+        margin-bottom: 5px;
     }
     
     .piece-count {
         font-size: 1.2rem;
+    }
+    
+    .game-board-container {
+        padding: 5px;
+        min-height: 0;
+        flex: 1 1 auto;
+    }
+    
+    .game-message {
+        margin-top: 10px;
+        padding: 10px;
+        font-size: 0.9rem;
+        min-height: 40px;
+    }
+    
+    .rules-container {
+        padding: 20px;
+        max-width: 100%;
+    }
+    
+    .rules-container h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .rule-item {
+        padding: 15px;
+    }
+    
+    .rule-item h3 {
+        font-size: 1.1rem;
+    }
+    
+    .rule-item p,
+    .rule-item li {
+        font-size: 0.9rem;
+    }
+    
+    .game-over-container {
+        padding: 30px 20px;
+        margin: 20px;
+        max-width: calc(100% - 40px);
+    }
+    
+    .game-over-message {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .screen {
+        padding: 8px;
+    }
+    
+    .game-title {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .menu-btn, .mode-btn {
+        font-size: 0.95rem;
+        padding: 12px 18px;
+        min-height: 48px;
+    }
+    
+    .mode-icon {
+        font-size: 2rem;
+    }
+    
+    .mode-title {
+        font-size: 1.1rem;
+    }
+    
+    .mode-desc {
+        font-size: 0.85rem;
+    }
+    
+    .player-info {
+        padding: 6px;
+    }
+    
+    .player-avatar {
+        font-size: 1.3rem;
+    }
+    
+    #current-turn {
+        font-size: 0.8rem;
+    }
+    
+    .piece-count {
+        font-size: 1rem;
+    }
+    
+    .player-info-item span {
+        font-size: 0.85rem;
     }
 }
 
