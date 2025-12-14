@@ -202,19 +202,32 @@ class Renderer {
 
     setupCanvas() {
         const container = this.canvas.parentElement;
-        const size = Math.min(container.clientWidth - 32, container.clientHeight - 200, window.innerWidth - 40, 500);
-        const boardSize = Math.max(280, size);
+        if (!container) return;
         
-        this.canvas.width = boardSize;
-        this.canvas.height = boardSize;
+        const containerWidth = container.clientWidth || window.innerWidth - 40;
+        const containerHeight = container.clientHeight || window.innerHeight - 300;
+        const windowWidth = window.innerWidth || 400;
+        
+        const availableSize = Math.min(containerWidth - 32, containerHeight, windowWidth - 40, 500);
+        const boardSize = Math.max(280, availableSize);
+        
+        // 고해상도 디스플레이를 위한 DPR 조정
+        const dpr = window.devicePixelRatio || 1;
+        
+        this.canvas.width = boardSize * dpr;
+        this.canvas.height = boardSize * dpr;
         this.canvas.style.width = boardSize + 'px';
         this.canvas.style.height = boardSize + 'px';
+        
+        const ctx = this.canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
         
         this.cellSize = (boardSize - this.padding * 2) / this.game.size;
         this.boardSize = boardSize;
     }
 
     setupEvents() {
+        // 클릭 이벤트
         this.canvas.addEventListener('click', (e) => {
             const rect = this.canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -227,6 +240,7 @@ class Renderer {
             }
         });
 
+        // 터치 이벤트
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
@@ -240,11 +254,23 @@ class Renderer {
                 this.onCellClick(row, col);
             }
         });
+
+        // 리사이즈 이벤트
+        const resizeHandler = () => {
+            this.setupCanvas();
+            this.render();
+        };
+        window.addEventListener('resize', resizeHandler);
     }
 
     render() {
+        if (!this.ctx || !this.game) return;
+        
         const ctx = this.ctx;
         const size = this.game.size;
+        
+        // 캔버스 클리어
+        ctx.clearRect(0, 0, this.boardSize, this.boardSize);
         
         // 배경
         ctx.fillStyle = '#8B7355';
