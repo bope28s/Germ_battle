@@ -1,74 +1,75 @@
-// 간단한 AI 알고리즘 (초등학생 수준의 난이도)
-class SimpleAI {
-    constructor(difficulty = 'easy') {
-        this.difficulty = difficulty;
+// AI 클래스
+class AI {
+    constructor() {
+        this.difficulty = 'easy';
     }
 
-    // AI가 다음 수를 선택
-    chooseMove(gameState) {
-        const validMoves = gameState.getValidMoves(2); // AI는 플레이어 2
-
-        if (validMoves.length === 0) {
-            return null;
-        }
-
+    getMove(game) {
+        const validMoves = game.getValidMoves(2);
+        if (validMoves.length === 0) return null;
+        
         if (this.difficulty === 'easy') {
-            // 쉬운 난이도: 랜덤 선택
+            // 랜덤 선택
             return validMoves[Math.floor(Math.random() * validMoves.length)];
         } else {
-            // 보통 난이도: 평가 함수 사용
-            return this.bestMove(gameState, validMoves);
+            // 최선의 수 선택
+            return this.findBestMove(game, validMoves);
         }
     }
 
-    // 최선의 수 찾기 (간단한 휴리스틱)
-    bestMove(gameState, validMoves) {
+    findBestMove(game, moves) {
         let bestMove = null;
         let bestScore = -Infinity;
-
-        for (const move of validMoves) {
-            // 이 수를 뒀을 때의 상태 시뮬레이션
-            const testState = gameState.clone();
-            testState.makeMove(move.row, move.col, 2);
-
-            // 점수 계산
-            const score = this.evaluatePosition(testState, 2);
-
+        
+        for (const move of moves) {
+            // 임시 게임 상태 생성
+            const testGame = this.cloneGame(game);
+            testGame.makeMove(move.row, move.col);
+            
+            const score = this.evaluate(testGame, 2);
+            
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = move;
             }
         }
-
-        return bestMove || validMoves[0];
+        
+        return bestMove || moves[0];
     }
 
-    // 위치 평가 함수
-    evaluatePosition(gameState, player) {
+    evaluate(game, player) {
         const opponent = player === 1 ? 2 : 1;
-        const myPieces = gameState.getPieceCount(player);
-        const opponentPieces = gameState.getPieceCount(opponent);
-
+        const myCount = game.getCount(player);
+        const oppCount = game.getCount(opponent);
+        
         // 기본 점수: 말 개수 차이
-        let score = myPieces - opponentPieces;
-
-        // 추가 전략: 중앙을 선호
-        const center = Math.floor(gameState.size / 2);
-        for (let i = 0; i < gameState.size; i++) {
-            for (let j = 0; j < gameState.size; j++) {
-                if (gameState.board[i][j] === player) {
-                    const distFromCenter = Math.abs(i - center) + Math.abs(j - center);
-                    score += (gameState.size - distFromCenter) * 0.1;
+        let score = myCount - oppCount;
+        
+        // 중앙 선호
+        const center = Math.floor(game.size / 2);
+        for (let i = 0; i < game.size; i++) {
+            for (let j = 0; j < game.size; j++) {
+                if (game.board[i][j] === player) {
+                    const dist = Math.abs(i - center) + Math.abs(j - center);
+                    score += (game.size - dist) * 0.1;
                 }
             }
         }
-
-        // 가능한 이동 수 고려
-        const myMoves = gameState.getValidMoves(player).length;
-        const opponentMoves = gameState.getValidMoves(opponent).length;
-        score += (myMoves - opponentMoves) * 0.5;
-
+        
+        // 이동 가능 수 고려
+        const myMoves = game.getValidMoves(player).length;
+        const oppMoves = game.getValidMoves(opponent).length;
+        score += (myMoves - oppMoves) * 0.5;
+        
         return score;
     }
-}
 
+    cloneGame(game) {
+        const clone = new Game(game.size);
+        clone.board = game.board.map(row => [...row]);
+        clone.currentPlayer = game.currentPlayer;
+        clone.gameOver = game.gameOver;
+        clone.winner = game.winner;
+        return clone;
+    }
+}

@@ -5,69 +5,46 @@
 }
 
 body {
-    font-family: 'Arial', 'Malgun Gothic', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #333;
     overflow-x: hidden;
-    overflow-y: auto;
     -webkit-tap-highlight-color: transparent;
-    -webkit-overflow-scrolling: touch;
-}
-
-#app {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
+    min-height: 100vh;
 }
 
 .screen {
     display: none;
-    width: 100%;
     min-height: 100vh;
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 15px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    padding: 20px;
+    position: relative;
 }
 
 .screen.active {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 /* 시작 화면 */
 #start-screen {
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    gap: 60px;
 }
 
-.title-container {
-    margin-bottom: 40px;
-}
-
-.game-title {
-    font-size: 3rem;
-    color: white;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+.logo h1 {
+    font-size: 80px;
     margin-bottom: 10px;
-    animation: bounce 2s infinite;
 }
 
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.subtitle {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.9);
+.logo h2 {
+    font-size: 48px;
+    color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.menu-buttons {
+.buttons {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -75,229 +52,270 @@ body {
     max-width: 300px;
 }
 
-.menu-btn, .mode-btn {
-    background: white;
+/* 버튼 스타일 */
+.btn-primary, .btn-secondary {
+    padding: 18px 30px;
     border: none;
-    border-radius: 20px;
-    padding: 20px 30px;
-    font-size: 1.3rem;
+    border-radius: 15px;
+    font-size: 18px;
     font-weight: bold;
-    color: #667eea;
     cursor: pointer;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    transition: all 0.2s;
+    touch-action: manipulation;
+    min-height: 56px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background: white;
+    color: #667eea;
+}
+
+.btn-primary:active {
+    transform: scale(0.95);
+    background: #f5f5f5;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-secondary:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 20px;
+    cursor: pointer;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.btn-back:active {
+    transform: scale(0.9);
+}
+
+/* 헤더 */
+.header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    touch-action: manipulation;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-    min-height: 60px;
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
-.menu-btn:active, .mode-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.header h2 {
+    color: white;
+    font-size: 24px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.btn-icon {
-    font-size: 1.5rem;
-}
-
-/* 모드 선택 화면 */
-#mode-screen {
-    justify-content: flex-start;
-    padding-top: 40px;
-}
-
-.mode-buttons {
+/* 모드 선택 */
+.mode-cards {
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    width: 100%;
-    max-width: 350px;
-    margin-top: 30px;
+    gap: 20px;
 }
 
-.mode-btn {
-    flex-direction: column;
+.mode-card {
+    background: white;
+    border-radius: 20px;
     padding: 30px;
-    gap: 10px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    text-align: center;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mode-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .mode-icon {
-    font-size: 3rem;
+    font-size: 60px;
+    margin-bottom: 15px;
 }
 
-.mode-title {
-    font-size: 1.5rem;
+.mode-card h3 {
+    font-size: 22px;
+    color: #667eea;
+    margin-bottom: 8px;
 }
 
-.mode-desc {
-    font-size: 1rem;
+.mode-card p {
+    font-size: 16px;
     color: #666;
-    font-weight: normal;
 }
 
 /* 게임 화면 */
 #game-screen {
-    padding: 8px;
-    justify-content: flex-start;
-    align-items: stretch;
+    padding: 15px;
+    gap: 15px;
 }
 
 .game-header {
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.player-info {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
 }
 
-.player-info-item {
+.score-board {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    gap: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    gap: 10px;
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     flex: 1;
 }
 
-.player-avatar {
-    font-size: 2rem;
+.player-color {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }
 
-#current-turn {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #667eea;
-    padding: 5px 15px;
-    background: rgba(102, 126, 234, 0.1);
-    border-radius: 20px;
+.player-color.green {
+    background: #4CAF50;
 }
 
-.piece-count {
-    font-size: 1.5rem;
+.player-color.red {
+    background: #F44336;
+}
+
+.score-text {
+    flex: 1;
+}
+
+.player-name {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.score-count {
+    font-size: 24px;
     font-weight: bold;
     color: #333;
 }
 
-.game-board-container {
-    flex: 1 1 auto;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-    min-height: 0;
-    overflow: hidden;
+.turn-indicator {
+    padding: 8px 16px;
+    background: #667eea;
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
-#game-board {
+.game-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;
+    padding: 10px;
+}
+
+#board {
     max-width: 100%;
     max-height: 100%;
     border-radius: 15px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     background: #8B7355;
     touch-action: none;
 }
 
 .game-message {
-    margin-top: 15px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    font-size: 1.1rem;
     text-align: center;
-    min-height: 50px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    font-size: 16px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 게임 방법 화면 */
-#rules-screen {
-    justify-content: flex-start;
-    padding-top: 20px;
-}
-
-.rules-container {
-    width: 100%;
-    max-width: 600px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-.rules-container h2 {
-    text-align: center;
-    color: #667eea;
-    margin-bottom: 30px;
-    font-size: 2rem;
-}
-
-.rules-content {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.rule-item {
-    background: #f8f9fa;
-    border-radius: 15px;
-    padding: 20px;
-    border-left: 5px solid #667eea;
-}
-
-.rule-item h3 {
-    color: #667eea;
-    margin-bottom: 10px;
-    font-size: 1.3rem;
-}
-
-.rule-item p {
-    line-height: 1.6;
-    margin-bottom: 10px;
-}
-
-.rule-item ul {
-    margin-left: 20px;
-    line-height: 1.8;
-}
-
-.rule-item li {
-    margin-bottom: 5px;
-}
-
-/* 게임 종료 화면 */
+/* 게임 종료 */
 #game-over-screen {
+    justify-content: center;
+    align-items: center;
     background: rgba(0, 0, 0, 0.8);
 }
 
-.game-over-container {
+.game-over-content {
     background: white;
-    border-radius: 20px;
-    padding: 40px;
+    border-radius: 25px;
+    padding: 40px 30px;
     text-align: center;
+    max-width: 400px;
+    width: 100%;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-.game-over-message {
-    font-size: 2rem;
+.result-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.game-over-content h2 {
+    font-size: 32px;
+    color: #667eea;
     margin-bottom: 30px;
+}
+
+.final-scores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 15px;
+}
+
+.final-score {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.final-score span:first-child {
+    font-size: 14px;
+    color: #666;
+}
+
+.final-score span:last-child {
+    font-size: 32px;
     font-weight: bold;
+    color: #333;
+}
+
+.vs {
+    font-size: 18px;
+    color: #999;
+    padding: 0 20px;
 }
 
 .game-over-buttons {
@@ -306,206 +324,136 @@ body {
     gap: 15px;
 }
 
-.back-btn {
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    color: #667eea;
-    cursor: pointer;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    touch-action: manipulation;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-    min-height: 44px;
+/* 도움말 */
+#help-screen {
+    gap: 20px;
 }
 
-.back-btn:active {
-    transform: scale(0.95);
+.help-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.help-item {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.help-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.help-item h3 {
+    font-size: 20px;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.help-item p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.help-item ul {
+    margin-left: 20px;
+    font-size: 15px;
+    color: #666;
+    line-height: 1.8;
 }
 
 /* 모바일 최적화 */
 @media (max-width: 768px) {
     .screen {
-        padding: 10px;
-    }
-    
-    .game-title {
-        font-size: 2rem;
-        margin-bottom: 5px;
-    }
-    
-    .subtitle {
-        font-size: 0.9rem;
-    }
-    
-    .title-container {
-        margin-bottom: 30px;
-    }
-    
-    .menu-btn, .mode-btn {
-        font-size: 1rem;
-        padding: 15px 20px;
-        min-height: 50px;
-    }
-    
-    .menu-buttons {
-        max-width: 100%;
-        gap: 15px;
-    }
-    
-    .mode-buttons {
-        max-width: 100%;
-        margin-top: 20px;
-        gap: 20px;
-    }
-    
-    .mode-icon {
-        font-size: 2.5rem;
-    }
-    
-    .mode-title {
-        font-size: 1.2rem;
-    }
-    
-    .mode-desc {
-        font-size: 0.9rem;
-    }
-    
-    #mode-screen {
-        padding-top: 20px;
-    }
-    
-    .game-header {
-        margin-bottom: 10px;
-    }
-    
-    .player-info {
-        padding: 8px;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .player-info-item {
-        min-width: 80px;
-    }
-    
-    .player-avatar {
-        font-size: 1.5rem;
-    }
-    
-    #current-turn {
-        font-size: 0.85rem;
-        padding: 5px 10px;
-        order: -1;
-        width: 100%;
-        margin-bottom: 5px;
-    }
-    
-    .piece-count {
-        font-size: 1.2rem;
-    }
-    
-    .game-board-container {
-        padding: 5px;
-        min-height: 0;
-        flex: 1 1 auto;
-    }
-    
-    .game-message {
-        margin-top: 10px;
-        padding: 10px;
-        font-size: 0.9rem;
-        min-height: 40px;
-    }
-    
-    .rules-container {
-        padding: 20px;
-        max-width: 100%;
-    }
-    
-    .rules-container h2 {
-        font-size: 1.5rem;
-        margin-bottom: 20px;
-    }
-    
-    .rule-item {
         padding: 15px;
     }
-    
-    .rule-item h3 {
-        font-size: 1.1rem;
+
+    .logo h1 {
+        font-size: 60px;
     }
-    
-    .rule-item p,
-    .rule-item li {
-        font-size: 0.9rem;
+
+    .logo h2 {
+        font-size: 36px;
     }
-    
-    .game-over-container {
-        padding: 30px 20px;
-        margin: 20px;
-        max-width: calc(100% - 40px);
+
+    .buttons {
+        max-width: 100%;
     }
-    
-    .game-over-message {
-        font-size: 1.5rem;
-        margin-bottom: 20px;
+
+    .score-board {
+        flex-wrap: wrap;
+        padding: 12px;
+    }
+
+    .turn-indicator {
+        width: 100%;
+        text-align: center;
+        order: -1;
+        margin-bottom: 10px;
+    }
+
+    .player-color {
+        width: 35px;
+        height: 35px;
+    }
+
+    .score-count {
+        font-size: 20px;
+    }
+
+    .player-name {
+        font-size: 12px;
     }
 }
 
 @media (max-width: 480px) {
     .screen {
-        padding: 8px;
+        padding: 10px;
     }
-    
-    .game-title {
-        font-size: 1.5rem;
+
+    #start-screen {
+        gap: 40px;
     }
-    
-    .subtitle {
-        font-size: 0.8rem;
+
+    .logo h1 {
+        font-size: 50px;
     }
-    
-    .menu-btn, .mode-btn {
-        font-size: 0.95rem;
-        padding: 12px 18px;
-        min-height: 48px;
+
+    .logo h2 {
+        font-size: 28px;
     }
-    
+
+    .btn-primary, .btn-secondary {
+        font-size: 16px;
+        padding: 15px 25px;
+    }
+
+    .mode-card {
+        padding: 25px 20px;
+    }
+
     .mode-icon {
-        font-size: 2rem;
+        font-size: 50px;
     }
-    
-    .mode-title {
-        font-size: 1.1rem;
+
+    .mode-card h3 {
+        font-size: 20px;
     }
-    
-    .mode-desc {
-        font-size: 0.85rem;
+
+    .mode-card p {
+        font-size: 14px;
     }
-    
-    .player-info {
-        padding: 6px;
+
+    .result-icon {
+        font-size: 60px;
     }
-    
-    .player-avatar {
-        font-size: 1.3rem;
-    }
-    
-    #current-turn {
-        font-size: 0.8rem;
-    }
-    
-    .piece-count {
-        font-size: 1rem;
-    }
-    
-    .player-info-item span {
-        font-size: 0.85rem;
+
+    .game-over-content h2 {
+        font-size: 24px;
     }
 }
-

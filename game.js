@@ -1,83 +1,78 @@
-// 게임 상태
-class GameState {
+// 게임 클래스
+class Game {
     constructor(size = 7) {
         this.size = size;
-        this.board = Array(size).fill(null).map(() => Array(size).fill(0));
-        this.currentPlayer = 1; // 1 = 플레이어 1 (초록), 2 = 플레이어 2 (빨강)
-        this.gameMode = null; // 'vs-computer' or 'vs-player'
+        this.board = Array(size).fill(0).map(() => Array(size).fill(0));
+        this.currentPlayer = 1;
         this.gameOver = false;
         this.winner = null;
-        this.initialized = false;
+        this.renderer = null;
     }
 
-    // 초기 보드 설정 (가장자리에 말 배치)
+    // 초기화
     initialize() {
-        // 모든 칸을 비움
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 this.board[i][j] = 0;
             }
         }
-
-        // 가장자리에 초기 말 배치 (대칭적으로)
-        const corners = [
-            [0, 0], [0, this.size - 1],
-            [this.size - 1, 0], [this.size - 1, this.size - 1]
-        ];
-
-        // 왼쪽 위와 오른쪽 아래는 플레이어 1 (초록)
+        
+        // 초기 말 배치 (모서리)
         this.board[0][0] = 1;
         this.board[this.size - 1][this.size - 1] = 1;
-
-        // 왼쪽 아래와 오른쪽 위는 플레이어 2 (빨강)
         this.board[0][this.size - 1] = 2;
         this.board[this.size - 1][0] = 2;
-
-        this.currentPlayer = 1; // 플레이어 1부터 시작
-        this.initialized = true;
+        
+        this.currentPlayer = 1;
         this.gameOver = false;
         this.winner = null;
     }
 
-    // 가능한 이동 위치 찾기
+    reset() {
+        this.initialize();
+        if (this.renderer) {
+            this.renderer.render();
+        }
+    }
+
+    // 렌더러 초기화
+    initRenderer(canvas, onCellClick) {
+        this.renderer = new Renderer(canvas, this, onCellClick);
+        this.initialize();
+        this.renderer.render();
+    }
+
+    // 가능한 이동 찾기
     getValidMoves(player) {
         const moves = [];
-        const board = this.board;
-        const size = this.size;
-
-        for (let i = 0; i < size; i++) {
-            for (let j = 0; j < size; j++) {
-                if (board[i][j] === player) {
-                    // 한 칸 또는 두 칸 떨어진 위치 찾기
+        
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                if (this.board[i][j] === player) {
+                    // 8방향 + 2칸 범위 검사
                     for (let di = -2; di <= 2; di++) {
                         for (let dj = -2; dj <= 2; dj++) {
                             if (di === 0 && dj === 0) continue;
-
-                            const distance = Math.abs(di) + Math.abs(dj);
-                            if (distance > 2) continue; // 두 칸 이상 떨어진 곳 제외
-                            if (Math.abs(di) > 2 || Math.abs(dj) > 2) continue;
-
+                            
                             const ni = i + di;
                             const nj = j + dj;
-
-                            // 보드 범위 확인
-                            if (ni < 0 || ni >= size || nj < 0 || nj >= size) continue;
-
-                            // 빈 칸인지 확인
-                            if (board[ni][nj] !== 0) continue;
-
-                            // 거리 확인: 한 칸 또는 두 칸 (Chebyshev distance 사용)
-                            const chebyshevDist = Math.max(Math.abs(di), Math.abs(dj));
-
-                            // 정확히 한 칸 또는 두 칸만 허용 (가로, 세로, 대각선 모두 포함)
-                            if (chebyshevDist === 1 || chebyshevDist === 2) {
-                                if (!moves.some(m => m.row === ni && m.col === nj)) {
+                            
+                            // 범위 체크
+                            if (ni < 0 || ni >= this.size || nj < 0 || nj >= this.size) continue;
+                            
+                            // 빈 칸인지 체크
+                            if (this.board[ni][nj] !== 0) continue;
+                            
+                            // 거리 체크 (Chebyshev distance)
+                            const dist = Math.max(Math.abs(di), Math.abs(dj));
+                            if (dist === 1 || dist === 2) {
+                                if (!moves.find(m => m.row === ni && m.col === nj)) {
                                     moves.push({
                                         row: ni,
                                         col: nj,
                                         fromRow: i,
                                         fromCol: j,
-                                        distance: chebyshevDist
+                                        distance: dist
                                     });
                                 }
                             }
@@ -86,68 +81,62 @@ class GameState {
                 }
             }
         }
-
+        
         return moves;
     }
 
-    // 말 놓기
-    makeMove(row, col, player) {
+    // 수 두기
+    makeMove(row, col) {
+        const player = this.currentPlayer;
+        
         if (this.gameOver) return false;
         if (this.board[row][col] !== 0) return false;
-
-        // 유효한 이동인지 확인
+        
         const validMoves = this.getValidMoves(player);
         const move = validMoves.find(m => m.row === row && m.col === col);
         
         if (!move) return false;
-
-        // 두 칸 떨어진 곳이면 원래 위치의 말 제거
+        
+        // 두 칸이면 원래 위치 제거
         if (move.distance === 2) {
             this.board[move.fromRow][move.fromCol] = 0;
         }
-
+        
         // 말 놓기
         this.board[row][col] = player;
-
-        // 주변 상대방 말 전염 (인접한 8방향)
-        const directions = [
-            [-1, -1], [-1, 0], [-1, 1],
-            [0, -1],           [0, 1],
-            [1, -1],  [1, 0],  [1, 1]
-        ];
-
+        
+        // 주변 전염
+        const directions = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
         const opponent = player === 1 ? 2 : 1;
+        
         directions.forEach(([di, dj]) => {
             const ni = row + di;
             const nj = col + dj;
-            
             if (ni >= 0 && ni < this.size && nj >= 0 && nj < this.size) {
                 if (this.board[ni][nj] === opponent) {
                     this.board[ni][nj] = player;
                 }
             }
         });
-
+        
         // 플레이어 변경
         this.currentPlayer = opponent;
-
-        // 게임 종료 조건 확인
+        
+        // 게임 종료 체크
         this.checkGameOver();
-
+        
         return true;
     }
 
-    // 게임 종료 확인
+    // 게임 종료 체크
     checkGameOver() {
         const p1Moves = this.getValidMoves(1);
         const p2Moves = this.getValidMoves(2);
-
-        // 둘 다 더 이상 둘 곳이 없으면 게임 종료
+        
         if (p1Moves.length === 0 && p2Moves.length === 0) {
-            this.gameOver = true;
-            this.calculateWinner();
+            this.endGame();
         } else if (p1Moves.length === 0 || p2Moves.length === 0) {
-            // 한 쪽만 더 이상 둘 곳이 없으면, 나머지 칸을 그 쪽의 말로 채움
+            // 한 쪽만 둘 곳이 없으면 나머지 칸 채우기
             const winner = p1Moves.length === 0 ? 2 : 1;
             for (let i = 0; i < this.size; i++) {
                 for (let j = 0; j < this.size; j++) {
@@ -156,51 +145,26 @@ class GameState {
                     }
                 }
             }
-            this.gameOver = true;
-            this.calculateWinner();
-        }
-
-        // 모든 칸이 찬 경우
-        let allFilled = true;
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                if (this.board[i][j] === 0) {
-                    allFilled = false;
-                    break;
-                }
-            }
-            if (!allFilled) break;
-        }
-
-        if (allFilled) {
-            this.gameOver = true;
-            this.calculateWinner();
+            this.endGame();
         }
     }
 
-    // 승자 계산
-    calculateWinner() {
-        let p1Count = 0;
-        let p2Count = 0;
-
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
-                if (this.board[i][j] === 1) p1Count++;
-                else if (this.board[i][j] === 2) p2Count++;
-            }
-        }
-
+    endGame() {
+        this.gameOver = true;
+        const p1Count = this.getCount(1);
+        const p2Count = this.getCount(2);
+        
         if (p1Count > p2Count) {
             this.winner = 1;
         } else if (p2Count > p1Count) {
             this.winner = 2;
         } else {
-            this.winner = 0; // 무승부
+            this.winner = 0;
         }
     }
 
-    // 말 개수 세기
-    getPieceCount(player) {
+    // 개수 세기
+    getCount(player) {
         let count = 0;
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
@@ -210,196 +174,171 @@ class GameState {
         return count;
     }
 
-    // 보드 복사 (AI용)
-    clone() {
-        const newState = new GameState(this.size);
-        newState.board = this.board.map(row => [...row]);
-        newState.currentPlayer = this.currentPlayer;
-        newState.gameMode = this.gameMode;
-        newState.gameOver = this.gameOver;
-        newState.winner = this.winner;
-        newState.initialized = this.initialized;
-        return newState;
+    // 게터
+    getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
+    isGameOver() {
+        return this.gameOver;
+    }
+
+    getWinner() {
+        return this.winner;
     }
 }
 
-// 게임 렌더링 클래스
-class GameRenderer {
-    constructor(canvas, gameState, onCellClick) {
+// 렌더러 클래스
+class Renderer {
+    constructor(canvas, game, onCellClick) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.gameState = gameState;
+        this.game = game;
         this.onCellClick = onCellClick;
-        this.cellSize = 0;
         this.padding = 10;
-        this.validMoves = [];
-
         this.setupCanvas();
-        this.setupEventListeners();
+        this.setupEvents();
     }
 
     setupCanvas() {
         const container = this.canvas.parentElement;
-        const containerWidth = container.clientWidth - 16; // padding 고려
-        const containerHeight = container.clientHeight - 16;
+        const size = Math.min(container.clientWidth - 32, container.clientHeight - 200, window.innerWidth - 40, 500);
+        const boardSize = Math.max(280, size);
         
-        // 모바일에서는 가로를 기준으로, 데스크톱에서는 더 작은 값 사용
-        const availableSize = Math.min(containerWidth, containerHeight, window.innerWidth - 32);
-        const size = Math.max(280, availableSize); // 최소 크기 보장
+        this.canvas.width = boardSize;
+        this.canvas.height = boardSize;
+        this.canvas.style.width = boardSize + 'px';
+        this.canvas.style.height = boardSize + 'px';
         
-        this.canvas.width = size;
-        this.canvas.height = size;
-        this.canvas.style.width = size + 'px';
-        this.canvas.style.height = size + 'px';
-        
-        this.cellSize = (size - this.padding * 2) / this.gameState.size;
-        this.boardSize = size;
+        this.cellSize = (boardSize - this.padding * 2) / this.game.size;
+        this.boardSize = boardSize;
     }
 
-    setupEventListeners() {
+    setupEvents() {
         this.canvas.addEventListener('click', (e) => {
             const rect = this.canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
             const col = Math.floor((x - this.padding) / this.cellSize);
             const row = Math.floor((y - this.padding) / this.cellSize);
             
-            if (row >= 0 && row < this.gameState.size && col >= 0 && col < this.gameState.size) {
+            if (row >= 0 && row < this.game.size && col >= 0 && col < this.game.size) {
                 this.onCellClick(row, col);
             }
         });
 
-        // 터치 이벤트
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
             const rect = this.canvas.getBoundingClientRect();
             const x = touch.clientX - rect.left;
             const y = touch.clientY - rect.top;
-            
             const col = Math.floor((x - this.padding) / this.cellSize);
             const row = Math.floor((y - this.padding) / this.cellSize);
             
-            if (row >= 0 && row < this.gameState.size && col >= 0 && col < this.gameState.size) {
+            if (row >= 0 && row < this.game.size && col >= 0 && col < this.game.size) {
                 this.onCellClick(row, col);
             }
         });
-
-        // 리사이즈 이벤트
-        window.addEventListener('resize', () => {
-            this.setupCanvas();
-            this.render();
-        });
-    }
-
-    updateValidMoves() {
-        this.validMoves = this.gameState.getValidMoves(this.gameState.currentPlayer);
-    }
-
-    // 귀여운 세균 캐릭터 그리기
-    drawPiece(ctx, x, y, size, player) {
-        ctx.save();
-        ctx.translate(x, y);
-
-        const colors = player === 1 
-            ? { main: '#4CAF50', eye: '#1B5E20', mouth: '#2E7D32' }
-            : { main: '#F44336', eye: '#B71C1C', mouth: '#C62828' };
-
-        // 세균 몸체 (부드러운 원형)
-        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.5);
-        gradient.addColorStop(0, player === 1 ? '#81C784' : '#EF5350');
-        gradient.addColorStop(1, colors.main);
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(0, 0, size * 0.4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 테두리
-        ctx.strokeStyle = colors.main;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // 귀여운 얼굴
-        const eyeSize = size * 0.1;
-        const eyeOffset = size * 0.15;
-
-        // 왼쪽 눈
-        ctx.fillStyle = colors.eye;
-        ctx.beginPath();
-        ctx.arc(-eyeOffset, -eyeOffset, eyeSize, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 오른쪽 눈
-        ctx.beginPath();
-        ctx.arc(eyeOffset, -eyeOffset, eyeSize, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 미소
-        ctx.strokeStyle = colors.mouth;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(0, eyeOffset * 0.5, size * 0.15, 0.2, Math.PI - 0.2);
-        ctx.stroke();
-
-        // 반짝임 효과 (초등학생을 위한 귀여운 효과)
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.beginPath();
-        ctx.arc(-eyeOffset * 0.5, -eyeOffset * 1.2, size * 0.08, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
     }
 
     render() {
         const ctx = this.ctx;
-        const size = this.gameState.size;
-
+        const size = this.game.size;
+        
         // 배경
         ctx.fillStyle = '#8B7355';
         ctx.fillRect(0, 0, this.boardSize, this.boardSize);
-
-        // 그리드 그리기
+        
+        // 그리드
         ctx.strokeStyle = '#6B5B4A';
         ctx.lineWidth = 2;
-
+        
         for (let i = 0; i <= size; i++) {
             const pos = this.padding + i * this.cellSize;
-            
-            // 세로선
             ctx.beginPath();
             ctx.moveTo(pos, this.padding);
             ctx.lineTo(pos, this.boardSize - this.padding);
             ctx.stroke();
-
-            // 가로선
             ctx.beginPath();
             ctx.moveTo(this.padding, pos);
             ctx.lineTo(this.boardSize - this.padding, pos);
             ctx.stroke();
         }
-
-        // 유효한 이동 위치 하이라이트
-        this.updateValidMoves();
-        ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
-        this.validMoves.forEach(move => {
-            const x = this.padding + move.col * this.cellSize;
-            const y = this.padding + move.row * this.cellSize;
-            ctx.fillRect(x + 2, y + 2, this.cellSize - 4, this.cellSize - 4);
-        });
-
+        
+        // 유효한 이동 표시
+        if (!this.game.gameOver) {
+            const moves = this.game.getValidMoves(this.game.currentPlayer);
+            ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
+            moves.forEach(move => {
+                const x = this.padding + move.col * this.cellSize + 2;
+                const y = this.padding + move.row * this.cellSize + 2;
+                ctx.fillRect(x, y, this.cellSize - 4, this.cellSize - 4);
+            });
+        }
+        
         // 말 그리기
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
-                const player = this.gameState.board[i][j];
+                const player = this.game.board[i][j];
                 if (player !== 0) {
                     const x = this.padding + j * this.cellSize + this.cellSize / 2;
                     const y = this.padding + i * this.cellSize + this.cellSize / 2;
-                    this.drawPiece(ctx, x, y, this.cellSize * 0.8, player);
+                    this.drawPiece(ctx, x, y, this.cellSize * 0.75, player);
                 }
             }
         }
     }
-}
 
+    drawPiece(ctx, x, y, size, player) {
+        ctx.save();
+        ctx.translate(x, y);
+        
+        const colors = player === 1 
+            ? { main: '#4CAF50', light: '#81C784', dark: '#2E7D32' }
+            : { main: '#F44336', light: '#EF5350', dark: '#C62828' };
+        
+        // 그라데이션
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.5);
+        gradient.addColorStop(0, colors.light);
+        gradient.addColorStop(1, colors.main);
+        
+        // 몸체
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.strokeStyle = colors.dark;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // 얼굴
+        const eyeSize = size * 0.1;
+        const eyeOffset = size * 0.15;
+        
+        // 눈
+        ctx.fillStyle = colors.dark;
+        ctx.beginPath();
+        ctx.arc(-eyeOffset, -eyeOffset, eyeSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(eyeOffset, -eyeOffset, eyeSize, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 미소
+        ctx.strokeStyle = colors.dark;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, eyeOffset * 0.5, size * 0.15, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+        
+        // 하이라이트
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.beginPath();
+        ctx.arc(-eyeOffset * 0.5, -eyeOffset * 1.2, size * 0.08, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+    }
+}
