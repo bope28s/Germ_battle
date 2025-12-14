@@ -8,34 +8,34 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 시작 화면 -->
+    <!-- 메인 화면 (모든 요소가 한 화면에) -->
     <div id="start-screen" class="screen active">
-        <div class="logo">
-            <h1>🦠</h1>
-            <h2>세균전</h2>
+        <div class="main-header">
+            <div class="game-logo">🦠</div>
+            <h1 class="game-title">세균전</h1>
         </div>
-        <div class="buttons">
-            <button class="btn-primary" onclick="showModeScreen()">게임 시작</button>
-            <button class="btn-secondary" onclick="showHelpScreen()">게임 방법</button>
+        
+        <div class="main-buttons">
+            <button class="btn-main" onclick="toggleModeSection()">게임 시작</button>
+            <button class="btn-main" onclick="showHelpScreen()">게임 방법</button>
         </div>
-    </div>
 
-    <!-- 모드 선택 화면 -->
-    <div id="mode-screen" class="screen">
-        <div class="header">
-            <button class="btn-back" onclick="showStartScreen()">←</button>
-            <h2>게임 모드 선택</h2>
-        </div>
-        <div class="mode-cards">
-            <div class="mode-card" onclick="startGame('computer')">
-                <div class="mode-icon">🤖</div>
-                <h3>컴퓨터와 대전</h3>
-                <p>AI와 함께 즐기기</p>
-            </div>
-            <div class="mode-card" onclick="startGame('player')">
-                <div class="mode-icon">👥</div>
-                <h3>두 명이 함께</h3>
-                <p>같은 기기에서 번갈아 플레이</p>
+        <button class="btn-back-small" onclick="hideModeSection()" style="display: none;" id="mode-back-btn">←</button>
+
+        <!-- 모드 선택 영역 (같은 화면에 표시) -->
+        <div id="mode-section" class="mode-section">
+            <h2 class="section-title">게임 모드 선택</h2>
+            <div class="mode-cards">
+                <div class="mode-card" onclick="startGame('computer')">
+                    <div class="mode-icon">🤖</div>
+                    <h3>컴퓨터와 대전</h3>
+                    <p>AI와 함께 즐기기</p>
+                </div>
+                <div class="mode-card" onclick="startGame('player')">
+                    <div class="mode-icon">👥</div>
+                    <h3>두 명이 함께</h3>
+                    <p>같은 기기에서 번갈아 플레이</p>
+                </div>
             </div>
         </div>
     </div>

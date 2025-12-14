@@ -14,7 +14,33 @@ function showStartScreen() {
 }
 
 function showModeScreen() {
-    showScreen('mode-screen');
+    toggleModeSection();
+}
+
+function toggleModeSection() {
+    const modeSection = document.getElementById('mode-section');
+    const backBtn = document.getElementById('mode-back-btn');
+    const mainButtons = document.querySelector('.main-buttons');
+    
+    if (modeSection.style.display === 'none' || !modeSection.style.display) {
+        modeSection.style.display = 'block';
+        backBtn.style.display = 'block';
+        mainButtons.style.display = 'none';
+    } else {
+        modeSection.style.display = 'none';
+        backBtn.style.display = 'none';
+        mainButtons.style.display = 'flex';
+    }
+}
+
+function hideModeSection() {
+    const modeSection = document.getElementById('mode-section');
+    const backBtn = document.getElementById('mode-back-btn');
+    const mainButtons = document.querySelector('.main-buttons');
+    
+    modeSection.style.display = 'none';
+    backBtn.style.display = 'none';
+    mainButtons.style.display = 'flex';
 }
 
 function showHelpScreen() {
