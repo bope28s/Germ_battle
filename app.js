@@ -11,26 +11,14 @@ function showScreen(id) {
 
 function showStartScreen() {
     showScreen('start-screen');
-}
-
-function showModeScreen() {
-    toggleModeSection();
-}
-
-function toggleModeSection() {
+    // 모드 섹션을 다시 표시
     const modeSection = document.getElementById('mode-section');
     const backBtn = document.getElementById('mode-back-btn');
     const mainButtons = document.querySelector('.main-buttons');
     
-    if (modeSection.style.display === 'none' || !modeSection.style.display) {
-        modeSection.style.display = 'block';
-        backBtn.style.display = 'block';
-        mainButtons.style.display = 'none';
-    } else {
-        modeSection.style.display = 'none';
-        backBtn.style.display = 'none';
-        mainButtons.style.display = 'flex';
-    }
+    modeSection.style.display = 'block';
+    backBtn.style.display = 'none';
+    mainButtons.style.display = 'flex';
 }
 
 function hideModeSection() {
@@ -48,7 +36,7 @@ function showHelpScreen() {
 }
 
 function backToMenu() {
-    showScreen('mode-screen');
+    showStartScreen();
 }
 
 // 게임 시작
