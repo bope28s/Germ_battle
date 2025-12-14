@@ -11,18 +11,26 @@ body {
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
     min-height: 100vh;
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 .screen {
-    display: none;
+    display: none !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     min-height: 100vh;
     padding: 20px;
-    position: relative;
+    z-index: 1;
 }
 
 .screen.active {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
+    z-index: 10;
 }
 
 /* 시작 화면 */

@@ -18,9 +18,15 @@ function showStartScreen() {
     const backBtn = document.getElementById('mode-back-btn');
     const mainButtons = document.querySelector('.main-buttons');
     
-    if (modeSection) modeSection.style.display = 'block';
-    if (backBtn) backBtn.style.display = 'none';
-    if (mainButtons) mainButtons.style.display = 'flex';
+    if (modeSection) {
+        modeSection.style.display = 'block';
+    }
+    if (backBtn) {
+        backBtn.style.display = 'none';
+    }
+    if (mainButtons) {
+        mainButtons.style.display = 'flex';
+    }
 }
 
 function hideModeSection() {
@@ -189,6 +195,17 @@ function restartGame() {
 
 // 초기화
 document.addEventListener('DOMContentLoaded', () => {
+    // 모든 화면 숨기기
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    
+    // 시작 화면만 표시
+    const startScreen = document.getElementById('start-screen');
+    if (startScreen) {
+        startScreen.classList.add('active');
+    }
+    
     showStartScreen();
     
     // 윈도우 리사이즈 처리
